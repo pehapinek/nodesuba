@@ -1,0 +1,30 @@
+version: "3.7"
+
+services:
+  backend:
+    container_name: nodesuba-backend
+    image: node:16.13-slim
+    networks:
+      - network
+    restart: on-failure
+    ports:
+      - 4000:4000
+    working_dir: /usr/app
+    command: sh -c "yarn install && yarn start:dev"
+    volumes:
+      - "./backend/package.json:/usr/app/package.json"
+      - "./backend/src:/usr/app/src"
+      - "./backend/dist:/usr/app/dist"
+      - "./backend/.eslintrc.js:/usr/app/.eslintrc.js"
+      - "./backend/yarn.lock:/usr/app/yarn.lock"
+      - "./backend/tsconfig.json:/usr/app/tsconfig.json"
+      - "./backend/tsconfig.build.json:/usr/app/tsconfig.build.json"
+      - "./backend/.eslintignore:/usr/app/.eslintignore"
+      - "backend_node_modules:/usr/app/node_modules"
+
+networks:
+  network:
+    driver: bridge
+
+volumes:
+  backend_node_modules:
