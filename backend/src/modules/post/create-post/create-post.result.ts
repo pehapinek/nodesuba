@@ -1,0 +1,7 @@
+export enum CreatePostResult {
+  OK = 'OK',
+  BOARD_NOT_FOUND = 'BOARD_NOT_FOUND',
+  THREAD_NOT_FOUND = 'THREAD_NOT_FOUND',
+  BANNED = 'BANNED',
+  UNKNOWN_ERROR = 'UNKNOWN_ERROR',
+}

@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Board {
+  id                String                @id @db.VarChar(10)
+  name              String                @db.VarChar(50)
+  posts             Post[]
+  postsCounter      Int                   @default(0)
+}
+
+model Post {
+  guid              Int                   @id @default(autoincrement())
+  id                Int
+  board             Board                 @relation(fields: [boardId], references: [id])
+  boardId           String
+  createdAt         DateTime              @default(now())
+  bumpedAt          DateTime              @default(now())
+  ip                String                @db.Inet
+  name              String?               @db.VarChar(30)
+  email             String?               @db.VarChar(50)
+  passwordHash      String                @db.VarChar(32)
+  content           String                @db.Text
+  parentGuid        Int?
+  parent            Post?                 @relation("Replies", fields: [parentGuid], references: [guid])
+  replies           Post[]                @relation("Replies")
+  isPinned          Boolean               @default(false)
+  isAntibumped      Boolean               @default(false)
+
+  @@unique([boardId, id])
+}
+
+enum BanType {
+  IP
+  RANGE
+  ASN
+}
+
+model Ban {
+  id                Int             @id @default(autoincrement())
+  createdAt         DateTime        @default(now())
+  startsAt          DateTime
+  endsAt            DateTime?
+  banType           BanType
+  ip                String?         @db.Inet
+  range             String?         @db.Inet
+  asn               String?         @db.VarChar(20)
+  reason            String          @db.VarChar(100)
+}
+
+model Wordfilter {
+  id                Int             @id @default(autoincrement())
+  input             String          @db.VarChar(255)
+  output            String          @db.VarChar(255)
+}

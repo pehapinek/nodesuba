@@ -7,10 +7,19 @@ services:
     networks:
       - network
     restart: on-failure
+    env_file:
+      - .env
     ports:
       - 4000:4000
     working_dir: /usr/app
-    command: sh -c "yarn install && yarn start:dev"
+    command: >
+      sh -c "apt update -y 
+      && apt install openssl -y 
+      && yarn install 
+      && yarn prisma generate 
+      && yarn prisma migrate deploy 
+      && yarn prisma db seed 
+      && yarn start:dev"
     volumes:
       - "./backend/package.json:/usr/app/package.json"
       - "./backend/src:/usr/app/src"
@@ -20,7 +29,26 @@ services:
       - "./backend/tsconfig.json:/usr/app/tsconfig.json"
       - "./backend/tsconfig.build.json:/usr/app/tsconfig.build.json"
       - "./backend/.eslintignore:/usr/app/.eslintignore"
+      - "./backend/.prettierrc:/usr/app/.prettierrc"
+      - "./backend/prisma:/usr/app/prisma"
       - "backend_node_modules:/usr/app/node_modules"
+    depends_on:
+      - database
+  
+  database:
+    container_name: nodesuba-database
+    image: postgres:12.8
+    networks:
+      - network
+    restart: on-failure
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASS}"
+      POSTGRES_DB: "${DB_NAME}"
+    ports:
+      - 5432:5432
 
 networks:
   network:
