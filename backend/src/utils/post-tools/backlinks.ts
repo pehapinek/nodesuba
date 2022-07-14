@@ -1,13 +1,13 @@
-export type PostBacklink = {
+export type Backlink = {
   boardId: string;
-  postId: number;
+  id: number;
 };
 
 export const findBacklinks = (
   boardId: string,
   content: string,
-): PostBacklink[] => {
-  const backlinks: PostBacklink[] = [];
+): Backlink[] => {
+  const backlinks: Backlink[] = [];
   const matches = [
     ...content.matchAll(/>>(?<boardId>\/[a-z]+\/)?(?<postId>\d+)/g),
   ];
@@ -15,7 +15,7 @@ export const findBacklinks = (
   for (const match of matches) {
     backlinks.push({
       boardId: match.groups?.boardId ?? boardId,
-      postId: parseInt(match.groups?.postId),
+      id: parseInt(match.groups?.postId),
     });
   }
 

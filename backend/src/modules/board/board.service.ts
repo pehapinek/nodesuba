@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { POSTS_PER_PAGE } from '../../config';
+import { BoardCache } from './board.cache';
 import { PrismaService } from '../prisma';
 import { mapThreadData } from './utils/map-post-data';
 
 @Injectable()
 export class BoardService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly boardCache: BoardCache,
+  ) {}
 
   async listBoards() {
     return this.prisma.board.findMany({
@@ -17,6 +21,12 @@ export class BoardService {
   }
 
   async paginatePosts(boardId: string, page: number) {
+    const cachedPosts = await this.boardCache.getBoardPagination(boardId, page);
+
+    if (cachedPosts) {
+      return cachedPosts;
+    }
+    
     const posts = await this.prisma.post.findMany({
       where: {
         boardId: boardId,
@@ -25,9 +35,15 @@ export class BoardService {
       orderBy: [{ isPinned: 'desc' }, { bumpedAt: 'desc' }],
       include: {
         replies: {
+          include: {
+            linkedBy: true,
+            linksTo: true,
+          },
           take: 3,
           orderBy: { createdAt: 'desc' },
         },
+        linkedBy: true,
+        linksTo: true,
         _count: {
           select: { replies: true },
         },
@@ -36,10 +52,22 @@ export class BoardService {
       skip: POSTS_PER_PAGE * page,
     });
 
-    return posts.map((post) => mapThreadData(post));
+
+
+    const pagePosts = posts.map((post) => mapThreadData(post));
+
+    await this.boardCache.cacheBoardPagination(boardId, page, pagePosts);
+
+    return pagePosts;
   }
 
   async getThread(boardId: string, postId: number) {
+    const cachedThread = await this.boardCache.getThread(boardId, postId);
+
+    if (cachedThread) {
+      return cachedThread;
+    }
+
     const thread = await this.prisma.post.findUnique({
       where: {
         boardId_id: {
@@ -49,8 +77,14 @@ export class BoardService {
       },
       include: {
         replies: {
+          include: {
+            linkedBy: true,
+            linksTo: true,
+          },
           orderBy: { createdAt: 'asc' },
         },
+        linkedBy: true,
+        linksTo: true,
         _count: {
           select: { replies: true },
         },
@@ -61,6 +95,10 @@ export class BoardService {
       return null;
     }
 
-    return mapThreadData(thread);
+    const threadMapped = mapThreadData(thread);
+    
+    await this.boardCache.cacheThread(boardId, postId, threadMapped);
+
+    return threadMapped;
   }
 }

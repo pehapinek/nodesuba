@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client-js"  
+  previewFeatures = ["interactiveTransactions"]
 }
 
 datasource db {
@@ -34,8 +35,25 @@ model Post {
   replies           Post[]                @relation("Replies")
   isPinned          Boolean               @default(false)
   isAntibumped      Boolean               @default(false)
+  linksTo           PostBacklink[]        @relation("LinksTo")
+  linkedBy          PostBacklink[]        @relation("LinkedBy")
 
   @@unique([boardId, id])
+}
+
+model PostBacklink {
+  post                  Post                  @relation("LinkedBy", fields: [postGuid], references: [guid])
+  postGuid              Int
+  postId                Int
+  postParentId          Int?
+  postBoardId           String
+  linkedBy              Post                  @relation("LinksTo", fields: [linkedByGuid], references: [guid])
+  linkedByGuid          Int
+  linkedById            Int
+  linkedByParentId      Int?
+  linkedByBoardId       String
+
+  @@id([postGuid, linkedByGuid])
 }
 
 enum BanType {
