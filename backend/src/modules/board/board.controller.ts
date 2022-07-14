@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   NotFoundException,
+  NotImplementedException,
   Param,
   ParseIntPipe,
 } from '@nestjs/common';
@@ -17,6 +18,14 @@ export class BoardController {
   @ApiOperation({ summary: 'Returns a list of boards' })
   async list() {
     return await this.boardService.listBoards();
+  }
+
+  @Get(':boardId/catalog')
+  @ApiOperation({
+    summary: 'Returns a list of posts in catalog',
+  })
+  async catalog() {
+    return new NotImplementedException();
   }
 
   @Get(':boardId/page/:page')

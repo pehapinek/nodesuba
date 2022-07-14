@@ -2,10 +2,14 @@ import {
   Body,
   ConflictException,
   Controller,
+  Delete,
+  Get,
   GoneException,
   InternalServerErrorException,
   NotFoundException,
+  NotImplementedException,
   Post,
+  Query,
 } from '@nestjs/common';
 import {
   ApiConflictResponse,
@@ -50,5 +54,41 @@ export class PostController {
     }
 
     return result.payload;
+  }
+
+  @Delete()
+  @ApiOperation({ summary: 'Deletes a post' })
+  async deletePost() {
+    return new NotImplementedException();
+  }
+
+  @Get('search')
+  @ApiOperation({ summary: 'Returns a posts containing the specified keyword' })
+  async search(@Query('query') query: string) {
+    return new NotImplementedException();
+  }
+
+  @Post('report')
+  @ApiOperation({ summary: 'Reports a post' })
+  async reportPost() {
+    return new NotImplementedException();
+  }
+
+  @Post('lock')
+  @ApiOperation({ summary: 'Locks/unlocks a thread' })
+  async lockThread() {
+    return new NotImplementedException();
+  }
+
+  @Post('stick')
+  @ApiOperation({ summary: 'Sticks/unsticks a thread' })
+  async stickThread() {
+    return new NotImplementedException();
+  }
+
+  @Get(':boardId/:postId')
+  @ApiOperation({ summary: 'Returns a preview of a single post' })
+  async previewPost() {
+    return new NotImplementedException();
   }
 }
