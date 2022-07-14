@@ -14,10 +14,13 @@ export class CreatePostDto {
 
   @ApiProperty()
   @MaxLength(50)
+  @IsOptional()
   name?: string;
 
   @ApiProperty()
   @MaxLength(6000)
+  @IsDefined()
+  @IsString()
   content: string;
 
   @ApiProperty()
@@ -26,5 +29,8 @@ export class CreatePostDto {
   password: string;
 
   @ApiProperty()
+  @MaxLength(50)
+  @IsString()
+  @IsOptional()
   email?: string;
 }
