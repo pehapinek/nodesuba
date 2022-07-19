@@ -3,6 +3,7 @@ import {
   ConflictException,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   GoneException,
   InternalServerErrorException,
@@ -16,6 +17,7 @@ import {
   ApiCreatedResponse,
   ApiGoneResponse,
   ApiNotFoundResponse,
+  ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
@@ -24,11 +26,17 @@ import { IAnonUser } from '../../utils/decorators/anon-user.interface';
 import { CreatePostDto } from './create-post/create-post.dto';
 import { CreatePostResult } from './create-post/create-post.result';
 import { CreatePostService } from './create-post/create-post.service';
+import { DeletePostDto } from './delete-post/delete-post.dto';
+import { DeletePostResult } from './delete-post/delete-post.result';
+import { DeletePostService } from './delete-post/delete-post.service';
 
 @ApiTags('post')
 @Controller('post')
 export class PostController {
-  constructor(private readonly createPostService: CreatePostService) {}
+  constructor(
+    private readonly createPostService: CreatePostService,
+    private readonly deletePostService: DeletePostService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Creates a post' })
@@ -57,9 +65,25 @@ export class PostController {
   }
 
   @Delete()
-  @ApiOperation({ summary: 'Deletes a post' })
-  async deletePost() {
-    return new NotImplementedException();
+  @ApiOperation({ summary: 'Deletes multiple posts by password' })
+  @ApiOkResponse({ description: 'Posts deleted successfully' })
+  @ApiNotFoundResponse({ description: 'Some posts do not exist' })
+  @ApiConflictResponse({
+    description: 'Cannot delete some posts because of cooldown',
+  })
+  async deletePost(@Body() dto: DeletePostDto) {
+    const result = await this.deletePostService.deletePosts(dto);
+
+    switch (result.type) {
+      case DeletePostResult.INVALID_PASSWORD:
+        throw new ForbiddenException();
+      case DeletePostResult.POST_NOT_FOUND:
+        throw new NotFoundException();
+      case DeletePostResult.TOO_EARLY:
+        throw new ConflictException();
+      case DeletePostResult.UNKNOWN_ERROR:
+        throw new InternalServerErrorException();
+    }
   }
 
   @Get('search')
