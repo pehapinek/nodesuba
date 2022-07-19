@@ -85,10 +85,4 @@ export class PostController {
   async stickThread() {
     return new NotImplementedException();
   }
-
-  @Get(':boardId/:postId')
-  @ApiOperation({ summary: 'Returns a preview of a single post' })
-  async previewPost() {
-    return new NotImplementedException();
-  }
 }

@@ -53,4 +53,10 @@ export class BoardController {
 
     return thread;
   }
+
+  @Get(':boardId/preview/:postId')
+  @ApiOperation({ summary: 'Returns a preview of a single post' })
+  async getPost() {
+    return new NotImplementedException();
+  }
 }
