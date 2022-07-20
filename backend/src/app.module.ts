@@ -3,6 +3,7 @@ import { CacheModule, Module } from '@nestjs/common';
 import { BanModule } from './modules/ban/ban.module';
 import { BoardModule } from './modules/board/board.module';
 import { PostModule } from './modules/post/post.module';
+import { WordfilterModule } from './modules/wordfilter/wordfilter.module';
 import { PrismaModule } from './modules/prisma';
 import * as redisStore from 'cache-manager-redis-store';
 
@@ -20,6 +21,7 @@ import * as redisStore from 'cache-manager-redis-store';
     BoardModule,
     PostModule,
     PrismaModule,
+    WordfilterModule,
   ],
 })
 export class AppModule {}

@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"  
+  provider        = "prisma-client-js"
   previewFeatures = ["interactiveTransactions"]
 }
 
@@ -12,46 +12,47 @@ datasource db {
 }
 
 model Board {
-  id                String                @id @db.VarChar(10)
-  name              String                @db.VarChar(50)
-  posts             Post[]
-  postsCounter      Int                   @default(0)
+  id           String @id @db.VarChar(10)
+  name         String @db.VarChar(50)
+  posts        Post[]
+  postsCounter Int    @default(0)
 }
 
 model Post {
-  guid              Int                   @id @default(autoincrement())
-  id                Int
-  board             Board                 @relation(fields: [boardId], references: [id])
-  boardId           String
-  createdAt         DateTime              @default(now())
-  bumpedAt          DateTime              @default(now())
-  ip                String                @db.Inet
-  name              String?               @db.VarChar(30)
-  email             String?               @db.VarChar(50)
-  passwordHash      String                @db.VarChar(32)
-  content           String                @db.Text
-  parentGuid        Int?
-  parent            Post?                 @relation("Replies", fields: [parentGuid], references: [guid])
-  replies           Post[]                @relation("Replies")
-  isPinned          Boolean               @default(false)
-  isAntibumped      Boolean               @default(false)
-  linksTo           PostBacklink[]        @relation("LinksTo")
-  linkedBy          PostBacklink[]        @relation("LinkedBy")
+  guid         Int            @id @default(autoincrement())
+  id           Int
+  board        Board          @relation(fields: [boardId], references: [id])
+  boardId      String
+  createdAt    DateTime       @default(now())
+  bumpedAt     DateTime       @default(now())
+  ip           String         @db.Inet
+  name         String?        @db.VarChar(30)
+  email        String?        @db.VarChar(50)
+  passwordHash String         @db.VarChar(32)
+  content      String         @db.Text
+  parentGuid   Int?
+  parent       Post?          @relation("Replies", fields: [parentGuid], references: [guid])
+  replies      Post[]         @relation("Replies")
+  isPinned     Boolean        @default(false)
+  isAntibumped Boolean        @default(false)
+  linksTo      PostBacklink[] @relation("LinksTo")
+  linkedBy     PostBacklink[] @relation("LinkedBy")
+  isDeleted    Boolean        @default(false)
 
   @@unique([boardId, id])
 }
 
 model PostBacklink {
-  post                  Post                  @relation("LinkedBy", fields: [postGuid], references: [guid])
-  postGuid              Int
-  postId                Int
-  postParentId          Int?
-  postBoardId           String
-  linkedBy              Post                  @relation("LinksTo", fields: [linkedByGuid], references: [guid])
-  linkedByGuid          Int
-  linkedById            Int
-  linkedByParentId      Int?
-  linkedByBoardId       String
+  post             Post   @relation("LinkedBy", fields: [postGuid], references: [guid])
+  postGuid         Int
+  postId           Int
+  postParentId     Int?
+  postBoardId      String
+  linkedBy         Post   @relation("LinksTo", fields: [linkedByGuid], references: [guid])
+  linkedByGuid     Int
+  linkedById       Int
+  linkedByParentId Int?
+  linkedByBoardId  String
 
   @@id([postGuid, linkedByGuid])
 }
@@ -63,19 +64,19 @@ enum BanType {
 }
 
 model Ban {
-  id                Int             @id @default(autoincrement())
-  createdAt         DateTime        @default(now())
-  startsAt          DateTime
-  endsAt            DateTime?
-  banType           BanType
-  ip                String?         @db.Inet
-  range             String?         @db.Inet
-  asn               String?         @db.VarChar(20)
-  reason            String          @db.VarChar(100)
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  startsAt  DateTime
+  endsAt    DateTime?
+  banType   BanType
+  ip        String?   @db.Inet
+  range     String?   @db.Inet
+  asn       String?   @db.VarChar(20)
+  reason    String    @db.VarChar(100)
 }
 
 model Wordfilter {
-  id                Int             @id @default(autoincrement())
-  input             String          @db.VarChar(255)
-  output            String          @db.VarChar(255)
+  id     Int    @id @default(autoincrement())
+  input  String @db.VarChar(255)
+  output String @db.VarChar(255)
 }

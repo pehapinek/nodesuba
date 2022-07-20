@@ -14,6 +14,7 @@ services:
     command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASS}
     volumes:
       - cache:/data
+
   backend:
     container_name: nodesuba-backend
     image: node:16.13-slim
@@ -26,13 +27,7 @@ services:
       - 4000:4000
     working_dir: /usr/app
     command: >
-      sh -c "apt update -y 
-      && apt install openssl -y 
-      && yarn install 
-      && yarn prisma generate 
-      && yarn prisma migrate deploy 
-      && yarn prisma db seed 
-      && yarn start:dev"
+      sh -c "apt update -y  && apt install openssl -y  && yarn install  && yarn prisma generate  && yarn prisma migrate dev  && yarn prisma db seed  && yarn start:dev"
     volumes:
       - "./backend/package.json:/usr/app/package.json"
       - "./backend/src:/usr/app/src"
@@ -48,7 +43,7 @@ services:
     depends_on:
       - database
       - cache
-  
+
   database:
     container_name: nodesuba-database
     image: postgres:12.8
@@ -63,6 +58,16 @@ services:
       POSTGRES_DB: "${DB_NAME}"
     ports:
       - 5432:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    depends_on:
+      - database
+    ports:
+      - 8080:8080
+    networks:
+      - network
 
 networks:
   network:
