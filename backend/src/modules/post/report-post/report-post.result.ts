@@ -1,0 +1,7 @@
+export enum ReportPostResult {
+    OK = 'OK',
+    POST_NOT_FOUND = 'POST_NOT_FOUND',
+    POST_ALREADY_REPORTED = 'POST_ALREADY_REPORTED',
+    UNKNOWN_ERROR = 'UNKNOWN_ERROR',
+  }
+  
