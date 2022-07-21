@@ -29,6 +29,9 @@ import { CreatePostService } from './create-post/create-post.service';
 import { DeletePostDto } from './delete-post/delete-post.dto';
 import { DeletePostResult } from './delete-post/delete-post.result';
 import { DeletePostService } from './delete-post/delete-post.service';
+import { ReportPostDto } from './report-post/report-post.dto';
+import { ReportPostResult } from './report-post/report-post.result';
+import { ReportPostService } from './report-post/report-post.service';
 
 @ApiTags('post')
 @Controller('post')
@@ -36,6 +39,7 @@ export class PostController {
   constructor(
     private readonly createPostService: CreatePostService,
     private readonly deletePostService: DeletePostService,
+    private readonly reportPostService: ReportPostService,
   ) {}
 
   @Post()
@@ -94,8 +98,23 @@ export class PostController {
 
   @Post('report')
   @ApiOperation({ summary: 'Reports a post' })
-  async reportPost() {
-    return new NotImplementedException();
+  @ApiOkResponse({ description: 'Posts reported successfully' })
+  @ApiNotFoundResponse({ description: 'Some posts do not exist' })
+  @ApiConflictResponse({ description: 'Post already reported' })
+  async reportPost(
+    @Body() dto: ReportPostDto,
+    @AnonUser() anonUser: IAnonUser,
+  ) {
+    const result = await this.reportPostService.reportPosts(dto, anonUser);
+
+    switch (result.type) {
+      case ReportPostResult.POST_NOT_FOUND:
+        throw new NotFoundException();
+      case ReportPostResult.POST_ALREADY_REPORTED:
+        throw new ConflictException();
+      case ReportPostResult.UNKNOWN_ERROR:
+        throw new InternalServerErrorException();
+    }
   }
 
   @Post('lock')

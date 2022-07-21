@@ -37,6 +37,7 @@ model Post {
   isAntibumped      Boolean               @default(false)
   linksTo           PostBacklink[]        @relation("LinksTo")
   linkedBy          PostBacklink[]        @relation("LinkedBy")
+  reports           Report[]
 
   @@unique([boardId, id])
 }
@@ -78,4 +79,12 @@ model Wordfilter {
   id                Int             @id @default(autoincrement())
   input             String          @db.VarChar(255)
   output            String          @db.VarChar(255)
+}
+
+model Report {
+  id                Int             @id @default(autoincrement())
+  post              Post            @relation(fields: [postGuid], references: [guid], onDelete: Cascade)
+  postGuid          Int
+  ip                String          @db.Inet
+  reason            String?         @db.VarChar(255)
 }
