@@ -5,10 +5,9 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #191919;
-  color: #d4d4d4;
 }
 
 code {
-  font-family: Roboto,helvetica neue,Helvetica,Arial,sans-serif;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
 }
