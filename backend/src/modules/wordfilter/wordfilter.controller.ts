@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Get } from '@nestjs/common';
 import { ApiCreatedResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateWordfilterDto } from './create-wordfilter.dto';
 import { WordfilterService } from './wordfilter.service';
@@ -15,5 +15,11 @@ export class WordfilterController {
     const wordfilter = await this.wordfilterService.createWordfilter(dto);
 
     return wordfilter;
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Returns wordfilters list' })
+  async getWordfilters() {
+    return await this.wordfilterService.getWordfilters();
   }
 }
