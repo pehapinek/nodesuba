@@ -3,12 +3,14 @@ import { POSTS_PER_PAGE } from '../../config';
 import { BoardCache } from './board.cache';
 import { PrismaService } from '../prisma';
 import { mapThreadData } from './utils/map-post-data';
+import { WordfilterService } from '../wordfilter/wordfilter.service';
 
 @Injectable()
 export class BoardService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly boardCache: BoardCache,
+    private readonly wordfilterService: WordfilterService,
   ) {}
 
   async listBoards() {
@@ -26,7 +28,7 @@ export class BoardService {
     if (cachedPosts) {
       return cachedPosts;
     }
-    
+
     const posts = await this.prisma.post.findMany({
       where: {
         boardId: boardId,
@@ -51,10 +53,9 @@ export class BoardService {
       take: POSTS_PER_PAGE,
       skip: POSTS_PER_PAGE * page,
     });
+    const wordfilters = await this.wordfilterService.getWordfilters();
 
-
-
-    const pagePosts = posts.map((post) => mapThreadData(post));
+    const pagePosts = posts.map((post) => mapThreadData(post, wordfilters));
 
     await this.boardCache.cacheBoardPagination(boardId, page, pagePosts);
 
@@ -95,8 +96,10 @@ export class BoardService {
       return null;
     }
 
-    const threadMapped = mapThreadData(thread);
-    
+    const wordfilters = await this.wordfilterService.getWordfilters();
+
+    const threadMapped = mapThreadData(thread, wordfilters);
+
     await this.boardCache.cacheThread(boardId, postId, threadMapped);
 
     return threadMapped;

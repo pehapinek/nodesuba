@@ -5,13 +5,10 @@ import {
   NotImplementedException,
   Param,
   ParseIntPipe,
-  UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { WordfilterInterceptor } from '../wordfilter/wordfilter.interceptor';
 import { BoardService } from './board.service';
 
-@UseInterceptors(WordfilterInterceptor)
 @ApiTags('board')
 @Controller('board')
 export class BoardController {
