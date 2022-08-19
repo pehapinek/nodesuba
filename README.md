@@ -7,7 +7,13 @@ docker-compose up
 ```
 I możemy bzikać. W przypadku backendu wchodzimy na `http://localhost:4000/docs` i się bawimy. Jest tam jakiś hot reload, więc jak coś zmienimy w kodzie to nasz docker też się odświeży bez żadnego pierdolenia.
 
-Żadnych envów jeszcze konfigurować nie trzeba, bo wrzuciłem domyślne. 
+Żadnych envów jeszcze konfigurować nie trzeba, bo wrzuciłem domyślne.
+
+Po każdej zmianie w pliku schema.prisma trzeba uruchomić polecenie
+```
+npm run prisma:generate
+```
+i zrestartować kontener aby zmiany w modelach pojawiły się w bazie danych.
 
 ## Backlog
 ### Co już jest?
