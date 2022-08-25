@@ -29,6 +29,9 @@ import { CreatePostService } from './create-post/create-post.service';
 import { DeletePostDto } from './delete-post/delete-post.dto';
 import { DeletePostResult } from './delete-post/delete-post.result';
 import { DeletePostService } from './delete-post/delete-post.service';
+import { LockThreadDto } from './lock-thread/lock-thread.dto';
+import { LockThreadResult } from './lock-thread/lock-thread.result';
+import { LockThreadService } from './lock-thread/lock-thread.service';
 import { ReportPostDto } from './report-post/report-post.dto';
 import { ReportPostResult } from './report-post/report-post.result';
 import { ReportPostService } from './report-post/report-post.service';
@@ -40,6 +43,7 @@ export class PostController {
     private readonly createPostService: CreatePostService,
     private readonly deletePostService: DeletePostService,
     private readonly reportPostService: ReportPostService,
+    private readonly lockThreadService: LockThreadService,
   ) {}
 
   @Post()
@@ -119,8 +123,15 @@ export class PostController {
 
   @Post('lock')
   @ApiOperation({ summary: 'Locks/unlocks a thread' })
-  async lockThread() {
-    return new NotImplementedException();
+  async lockThread(@Body() dto: LockThreadDto) {
+    const result = await this.lockThreadService.lockThread(dto);
+
+    switch (result.type) {
+      case LockThreadResult.THREAD_NOT_FOUND:
+        throw new NotFoundException();
+      case LockThreadResult.UNKNOWN_ERROR:
+        throw new InternalServerErrorException();
+    }
   }
 
   @Post('stick')
