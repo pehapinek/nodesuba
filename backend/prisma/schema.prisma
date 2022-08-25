@@ -35,6 +35,7 @@ model Post {
   replies           Post[]                @relation("Replies")
   isPinned          Boolean               @default(false)
   isAntibumped      Boolean               @default(false)
+  isLocked          Boolean               @default(false)
   linksTo           PostBacklink[]        @relation("LinksTo")
   linkedBy          PostBacklink[]        @relation("LinkedBy")
   reports           Report[]
