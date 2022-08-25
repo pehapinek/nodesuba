@@ -6,6 +6,7 @@ import {
   ForbiddenException,
   Get,
   GoneException,
+  HttpException,
   InternalServerErrorException,
   NotFoundException,
   NotImplementedException,
@@ -19,6 +20,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { AnonUser } from '../../utils/decorators/anon-user.decorator';
@@ -52,6 +54,7 @@ export class PostController {
   @ApiNotFoundResponse({ description: 'Board not found' })
   @ApiConflictResponse({ description: 'User is banned' })
   @ApiGoneResponse({ description: 'Thread not found' })
+  @ApiResponse({ status: 452, description: 'Thread is locked' })
   async createPost(
     @Body() dto: CreatePostDto,
     @AnonUser() anonUser: IAnonUser,
@@ -65,6 +68,8 @@ export class PostController {
         throw new GoneException();
       case CreatePostResult.BANNED:
         throw new ConflictException();
+      case CreatePostResult.THREAD_LOCKED:
+        throw new HttpException(undefined, 452);
       case CreatePostResult.UNKNOWN_ERROR:
         throw new InternalServerErrorException();
     }
