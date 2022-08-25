@@ -45,6 +45,10 @@ export class CreatePostService {
       if (!parentPost) {
         return new CommandResponse(CreatePostResult.THREAD_NOT_FOUND);
       }
+
+      if (parentPost.isLocked) {
+        return new CommandResponse(CreatePostResult.THREAD_LOCKED);
+      }
     }
 
     if (await this.banService.isBanned(anonUser)) {

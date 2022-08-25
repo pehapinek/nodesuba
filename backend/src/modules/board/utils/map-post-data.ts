@@ -12,7 +12,7 @@ const mapLinksTo = (backlinks: PostBacklink[]) => {
       id: backlink.postId,
       boardId: backlink.postBoardId,
       parentId: backlink.postParentId,
-    }
+    };
   });
 };
 
@@ -22,7 +22,7 @@ const mapLinkedBy = (backlinks: PostBacklink[]) => {
       id: backlink.linkedById,
       boardId: backlink.linkedByBoardId,
       parentId: backlink.linkedByParentId,
-    }
+    };
   });
 };
 
@@ -51,6 +51,7 @@ export const mapThreadData = (
     email: post.email,
     content: post.content,
     isPinned: post.isPinned,
+    isLocked: post.isLocked,
     repliesCount: post._count.replies,
     replies: post.replies
       .sort((a: Post, b: Post) => (a.id > b.id ? 1 : -1))
